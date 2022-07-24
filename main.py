@@ -1,207 +1,230 @@
-# imporing date
-import datetime
-
-# Library Management System
-file1 = open('books.txt', 'r')  # opening file
-lines = file1.read()
-file1.close()  # closing files
-list1 = lines.split('\n')  # spliting by '\n'
+from os import stat
+from get_input import get_input
 
 
-list2 = []  # an empty list
-for each_item in list1:  # iterating with each item in the 'list1'
-    list2.append(each_item.split(','))  # spliting item by ','
+def date():
+    """Returns current date"""
+    from datetime import date
 
-Library = {}
-for each_item in list2:
-    key = each_item[0]
-    values = []
-    for each in range(1, len(each_item)):
-        values.append(each_item[each])
-        Library[key] = values
+    today = date.today()
+    return today.strftime("%B %d, %Y")
 
 
-now = datetime.datetime.now()
+def time():
+    """Returns current time"""
+    from datetime import datetime
 
-print('\n')
-print("\t{|| Aryal Library ||}")
-print("\t^^^^^^^^^^^^^^^^^^^^^")
-print("___________________________")
-Name = input("Please state your full name: ")
-print("\n\tWelcome Mr/Ms.", Name.title())
-
-# function to view every items
+    now = datetime.now()
+    return now.strftime("%H.%M.%S")
 
 
-def all_items():
-    print("............................................................................")
-    print("\tBook Lists")
-    print("\t==========")
-    for key, values in Library.items():
-        print("\tBook ID  : ", key)
-        print("\n\tBook Name: ", values[0], "by", values[1], "@", values[-1] +
-              "\n\t--------------------------------------------------------------------")
+def datetime():
+    """Returns current date and time"""
+    return f"{date()}, {time()}"
 
 
-borrowed = {}  # empty dictonary to store borrowed items as global variable
-returned = {}  # empty dictonary to store returned items as global variable
+def get_data(filepath):
+    """Returns item from the filepath as a python dictionary"""
+    with open(f'{filepath}', 'rt') as fh:
+        values = fh.read().split("\n")
+        database = {}
+        for each in values:
+            if not len(each) < 1:
+                stripped = [each.strip()
+                            for each in
+                            each.strip().strip(",").split(",")]
+                id = stripped[0]
+                data = stripped[1:]
+                database[id] = data
+        return database
 
-infnite = True  # to run the program until user choose to exit
-while infnite:
-    try:
-        print("\t____________________________________\n\t>>>Press '1' to view available Books.\n\t>>>Press '2' to borrow Books.\n\t>>>Press '3' to return Books.\n\t>>>Press '4' to Exit.\n_______________________")
-        user_input = int(input(">>>Please enter here: "))
-        if user_input == 1:
-            print("\nOption '1'\nThese Books are available for now.")
-            all_items()
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        elif user_input == 2:
-            error2 = True
-            while error2:
-                try:
-                    all_items()
-                    print(
-                        "\nOption '2'\nChoose what to borrow.\nWhich book would you like to borrow today? Mr/Ms.", Name)
-                    to_borrow = str(input(">>> Please Enter Book ID: "))
-                    # book id milo ki milena vanera
-                    for key, values in Library.items():
-                        if to_borrow == key:
-                            if int(values[2]) > 0:
-                                print("\n" + values[0], "by", values[1] +
-                                      '\n' + "~~Wow!! Intresting choice.~~\n")
-                                # decereasing quantity
-                                new_quantity = int(values[2]) - 1
-                                values[2] = str(new_quantity)
-                                borrowed[key] = values
-                                # decreasing values in main library
-                                Library[key] = values
-                                # Writing Borrow Note
-                                total = 0
-                                file1 = open("Borrow Book Note.txt", 'w')
-                                file1.write("Borrow Records.\n")
-                                file1.write("===============\n")
-                                file1.write("Name:" + Name + "\t\t\t\t\tDate:" + str(now.year) +
-                                            "/" + str(now.month) + "/" + str(now.day) + "\n")
-                                file1.write(
-                                    "-------------------------------------------------------------------\n")
-                                file1.write(
-                                    "Name:" + '\t\t\t\t' + "\t\tPrice\n")
-                                for values in borrowed.values():
-                                    # removing '$'
-                                    dollar = values[-1]
-                                    no_dollar = dollar.replace('$', '')
-                                    total = float(no_dollar) + float(total)
-                                    # adding '$' back
-                                    total1 = "$" + str(total)
-                                    dollar1 = "$" + str(no_dollar)
-                                    file1.write(values[0] + '\t\t\t' +
-                                                '\t\t' + str(dollar1) + '\n')
-                                file1.write("Grand Total" + '\t\t\t\t\t' +
-                                            str(total1) + '\n')
-                                file1.write(
-                                    "___________________________________________________________________\n")
-                                file1.write(
-                                    "___________________________________________________________________\n")
-                                file1.write(
-                                    ">\t\t Aryal's borrowed \t\t<\n###################################################################\n")
-                                file1.close()
-                                # noteing....
-                                file1 = open("books.txt", 'w')
-                                for key, values in Library.items():
-                                    file1 = open("books.txt", 'a')
-                                    file1.write(key + ",")
-                                    for each in values:
-                                        file1.write(str(each + ','))
-                                    file1.write('\n')
-                                file1.close()
-                            else:
-                                print("\n\t***Sorry! The book '",
-                                      values[0], "' is out of stock!\n")
-                            error2 = False
-                except Exception:
-                    print("***Wrong Book Id!! Please re-enter Book ID***")
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        elif user_input == 3:
-            error3 = True
-            while error3 == True:
-                all_items()
+
+def display(data):
+    """Display all the items from a dictionary in a formatted manner."""
+
+    print()
+    for key, value in data.items():
+        formatted_item = f"{key:<5} {value[0]:<25} {value[1]:<25} {value[2]:<10} {value[3]:<5} "
+        print(formatted_item)
+        if key.lower() == "id":
+            print("-"*(len(formatted_item)))
+    print()
+
+
+main_file = "books.txt"
+database = get_data(main_file)
+cart = {"borrowed": [], "returned": []}
+
+
+def generate_invoice(cart, username, start_time):
+    """Generates note"""
+
+    filename = f"Invoice {username} {start_time}.txt"
+
+    with open(f'{filename}', 'wt') as fh:
+        fh.write(
+            f"================================= INVOICE ===============================\n\n")
+
+        total_amount = 0
+
+        fh.write(f"Customer: {username} \n")
+        fh.write(f"Date: {date()}\n")
+        fh.write(f"Time: {time()}\n\n")
+
+        for status, items in cart.items():
+            if len(items) >= 1:
+                fh.write(f"\n\n# Item(s) {status}\n\n")
+
+                total_amount = 0
+
+                formatted_header = f"{'ID':<5} {'Title':<50} {'Price':<5}"
+                fh.write(formatted_header + "\n")
+                fh.write("-"*len(formatted_header) + "\n")
+
+                for each in items:
+                    # [B001, A Game of Thrones, George R. R. Martin, 33, $2]
+                    id = each[0]
+                    title = each[1]
+                    author = each[2]
+                    # quantity = each[3]
+                    price = each[4]
+
+                    # calculation total amount
+                    price_num = float(price.strip("$"))
+                    total_amount += price_num
+
+                    formatted_item = f"{id:<5} {title + ' by ' + author:<50} {price:<5}"
+                    fh.write(f"{formatted_item}\n")
+
+                fh.write(f"\n\nGrand Total: {total_amount}\n\n")
+        fh.write(
+            "\n=================================== END =================================\n")
+
+
+def borrow_book(data, cart):
+    while True:
+        to_borrow = get_input(
+            "\nEnter ID of the item you want to borrow").upper()
+        if to_borrow in data.keys():
+            item = data[to_borrow]
+            name = item[0]
+            quantity = item[2]
+            if int(quantity) < 1:
+                print()
                 print(
-                    "Option 3\n========\nWhich book would you like to return today? Mr/Ms.", Name)
-                to_return = str(input(">>>Please Enter Book ID: "))
-                for key, values in Library.items():
-                    if to_return == key:
-                        error3_a = True
-                        while error3_a == True:
-                            try:
-                                days_kept = int(
-                                    input("How many days did you kept the book for yourself?: "))
-                                error3_a = False
-                            except Exception:
-                                print("***Please enter a number***")
-                        new_quantity = int(values[2]) + 1
-                        values[2] = str(new_quantity)
-                        values.append(days_kept)
-                        returned[key] = values
-                        print("\n\tThank you for returing",
-                              values[0], "by", values[1])
-                        # returning book note
-                        total_amt = 0.0
-                        total_fine = 0.0
-                        file1 = open("Return Book Note.txt", 'w')
-                        file1.write("Return Records.\n")
-                        file1.write("===============\n")
-                        file1.write("Name:" + Name + "\t\t\t\t\tDate:" + str(now.year) +
-                                    "/" + str(now.month) + "/" + str(now.day) + "\n")
-                        file1.write(
-                            "________________________________________________________________\n")
-                        file1.write("Name:\t\t\t\tDays\t\tPrice\tFine\t\n")
-                        for values in returned.values():
-                            days = int(values[-1])
-                            # removing '$'
-                            dollar = values[-2]
-                            no_dollar = dollar.replace('$', '')
-                            # calculating fine
-                            if days >= 10:
-                                fine_ = round((0.1 * float(no_dollar))
-                                              * float(days - 10), 2)
-                                total_fine += float(fine_)
-                                total_fine = round(total_fine, 2)
-                                fine_ = "$" + str(fine_)
-                            else:
-                                fine_ = '$0.0'
-                            # calculating fine
-                            total_amt = float(no_dollar) + total_amt
-                            # adding '$' back
-                            total_fine1 = '$' + str(total_fine)
-                            dollar1 = "$" + str(no_dollar)
-                            total_amt1 = "$" + str(total_amt)
-                            file1.write(values[0] + '\t\t\t' + str(days) +
-                                        '\t\t' + str(dollar) + '\t' + str(fine_) + '\n')
-                            values.pop()
-                        file1.write(
-                            "___________________________________________________________________\n")
-                        file1.write("Total" + '\t\t\t\t\t\t' + str(total_amt1) + '\t' + str(
-                            total_fine1) + '\n-------------------------------------------------------------------\n')
-                        file1.write("Grand Total\t\t\t\t\t$" +
-                                    str(float(total_amt) + float(total_fine)) + "\n")
-                        file1.write(
-                            "-------------------------------------------------------------------\n")
-                        file1.write(">\t\t\t Aryal's Library \t\t\t<\n")
-                        file1.write(
-                            "###################################################################\n")
-                        file1.close()
-                        # noteing....
-                        file1 = open("Books(Updated).txt", 'w')
-                        for key, values in Library.items():
-                            file1.write(key + ",")
-                            for each in values:
-                                file1.write(str(each + ','))
-                            file1.write('\n')
-                        file1.close()
-                        error3 = False
-        elif user_input == 4:
+                    f"[ Out of stock ] {name} is out of stock, please choose another. ")
+                print()
+            else:
+                print("\n# Item borrowed! Thank You!\n")
+                updateDatabase(data, to_borrow, do="sub")
+
+                # adding the particular item as list (a with its id at index 0) in the cart
+                cart["borrowed"].append([to_borrow] + data[to_borrow])
+            break
+        else:
             print(
-                "\tSorry to see you go. :( \n\tPlease visit us again.\n\tThank You\n\t\n\tExiting...")
-            exit()
-    except Exception:
-        print("\n***Please enter a number from given option!!***")
+                f"\n[ Error ] Invalid input '{to_borrow}', please try again!\n")
+            continue
+
+
+def return_book(data, cart):
+    while True:
+        to_return = get_input(
+            "\nEnter ID of the item you want to return").upper()
+        if to_return in data.keys():
+            item = data[to_return]
+            print("\n# Item returned! Thank You!\n")
+            updateDatabase(data, to_return, do="add")
+
+            # adding the particular item as list (a with its id at index 0) in the cart
+            cart["returned"].append([to_return] + data[to_return])
+            break
+        else:
+            print(
+                f"\n[ Error ] Invalid input '{to_return}', please try again!\n")
+            continue
+
+
+def updateDatabase(data, key, do="add", qty=1):
+    '''Update stock from in a dictionary data using the key.
+    Use the do="add"/do="sub" parameter to add or subtract from the stock.'''
+    prev_qty = int(data[key][2])
+
+    if do == "add":
+        new_qty = prev_qty + qty
+    elif do == "sub":
+        new_qty = prev_qty - qty
+
+    # updating item quantity
+    data[key][2] = str(new_qty)
+
+
+def updateStock(data, filepath):
+    """Updates data (text file) with the most recent data in the dictionary (i.e. data). """
+
+    with open(f'{filepath}', 'wt') as fh:
+        for key, value in data.items():
+            fh.write(f"{key},")
+            for count, each in enumerate(value):
+                fh.write(f"{each}{',' if count+1 != len(value) else ''}")
+            fh.write("\n")
+
+
+def main():
+    start_time = datetime()
+    username = get_input("Enter name").capitalize()
+    print()
+    print(f"Hi, Mr/s. {username}!")
+    print()
+
+    while True:
+        options = {
+            1: "View available books",
+            2: "Borrow a book",
+            3: "Return a book",
+            4: "Exit (or enter exit)"
+        }
+        while True:
+            print("-"*3)
+            for k, v in options.items():
+                print(f"Option {k}: {v}")
+
+            user_option = get_input(
+                "\nPlease select and choose an option", num=True)
+            if user_option in options.keys():
+
+                # print selected option
+                formatted_option = f"# Options {user_option}: {options[user_option]}"
+                print()
+                print(formatted_option)
+                print("-"*len(formatted_option))
+
+                if user_option == 1:
+                    # 1: "View available books",
+                    display(database)
+                    break
+                elif user_option == 2:
+                    # 2: "Borrow a book",
+                    display(database)
+                    borrow_book(database, cart)
+                    updateStock(database, main_file)
+                    generate_invoice(cart, username, start_time)
+                    break
+                elif user_option == 3:
+                    # 3: "Return a book",
+                    display(database)
+                    return_book(database, cart)
+                    updateStock(database, main_file)
+                    generate_invoice(cart, username, start_time)
+                    break
+                elif user_option == 4:
+                    # 4: "Exit"
+                    exit("[ OK ] Exiting...")
+            else:
+                print(
+                    f"[ Invalid input ] Entered value must one of {[i for i in options.keys()]}.\n")
+
+
+if __name__ == "__main__":
+    print("================== WELCOME TO LIBRARY MANAGEMENT SYSTEM ================\n")
+    main()

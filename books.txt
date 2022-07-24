@@ -1,7 +1,7 @@
-B001,A Game of Thrones,George R. R. Martin ,33,$2,
-B002,Bhagavad Gita,Vyasa,5,$5.5,
-B003,Mahabharata,Vyasa,5,$5.5,
-B004,The Stand,Stephen King,2,$1.2,
-B005,The Winds of Winter,George R. R. Martin ,0,$3.5,
-B006,To Kill a Mockingbird,Harper Le,1,$0.5,
-B007,To Send Nudes,Muskan,0,$6.9,
+ID,Title,Author,Quantity,Price
+B001,A Game of Thrones,George R. R. Martin,20,$2
+B002,Bhagavad Gita,Vyasa,0,$5.5
+B003,Mahabharata,Vyasa,4,$5.5
+B004,The Stand,Stephen King,3,$1.2
+B005,The Winds of Winter,George R. R. Martin,4,$3.5
+B006,To Kill a Mockingbird,Harper Le,1,$0.5
